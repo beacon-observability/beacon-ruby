@@ -6,8 +6,8 @@ caseSensitive: false
 useGitignore: true
 enableGlobDot: true
 import:
-  - https://cdn.jsdelivr.net/npm/@cspell/dict-people-names/cspell-ext.json
-  - https://cdn.jsdelivr.net/npm/@cspell/dict-redis/cspell-ext.json
+  - "@cspell/dict-people-names/cspell-ext.json"
+  - "@cspell/dict-redis/cspell-ext.json"
 ignorePaths:
   - ".git"
   - "bin"

@@ -280,10 +280,12 @@ describe OpenTelemetry::Instrumentation::Net::HTTP::Instrumentation do
 
     it 'captures errors' do
       WebMock.allow_net_connect!
+      # Exercise connection failures without depending on external DNS or network access.
+      allow(TCPSocket).to receive(:open).and_raise(SocketError, 'connection failure for test')
 
       uri  = URI.parse('http://invalid.com:99999/example')
       http = Net::HTTP.new(uri.host, uri.port)
-      _(-> { http.request(Net::HTTP::Get.new(uri.request_uri)) }).must_raise
+      _(-> { http.request(Net::HTTP::Get.new(uri.request_uri)) }).must_raise(SocketError)
 
       _(exporter.finished_spans.size).must_equal(1)
       _(span.name).must_equal 'connect'

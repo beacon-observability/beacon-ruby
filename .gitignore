@@ -1,4 +1,5 @@
 **/Gemfile.lock
+!beacon/validation/Gemfile.lock
 **/.yardoc
 **/doc
 **/docs

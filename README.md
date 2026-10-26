@@ -1,4 +1,21 @@
-# OpenTelemetry Ruby Contrib
+# Beacon Ruby
+
+Beacon Ruby is under development. This standalone downstream repository starts
+from the complete official OpenTelemetry Ruby Contrib source and history at
+`opentelemetry-instrumentation-all/v0.99.0`. Official OpenTelemetry Ruby Core gems
+provide the API, SDK, and exporters as dependencies.
+
+See the [Beacon development guide](beacon/README.md),
+[source baseline and synchronization process](beacon/UPSTREAM.md), and
+[release prerequisites](beacon/RELEASING.md). The product documentation is maintained
+in [Beacon](https://github.com/beacon-observability/beacon).
+
+There is no Beacon Ruby release, published Beacon gem, or validated Beacon runtime
+support matrix yet. Existing `opentelemetry-*` gem names and versions identify
+upstream components. The following sections are retained upstream reference
+material; upstream maintainers, badges, and releases do not describe Beacon status.
+
+## OpenTelemetry Ruby Contrib
 
 [![Slack channel][slack-image]][slack-url]
 [![GitHub Discussions][discussions-image]][discussions-url]

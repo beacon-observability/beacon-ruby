@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+gem 'opentelemetry-exporter-otlp', '0.37.0'
+gem 'opentelemetry-instrumentation-base', path: '../../instrumentation/base'
+gem 'opentelemetry-instrumentation-net_http', path: '../../instrumentation/net_http'
+gem 'opentelemetry-sdk', '1.13.1'

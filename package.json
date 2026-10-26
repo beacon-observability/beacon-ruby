@@ -28,6 +28,8 @@
     "write:source:ruby": "npm run check:source:ruby -- --autocorrect-all"
   },
   "devDependencies": {
+    "@cspell/dict-people-names": "1.1.16",
+    "@cspell/dict-redis": "1.0.7",
     "@umbrelladocs/linkspector": "0.5.6",
     "cspell": "10.3.6",
     "@prantlf/jsonlint": "17.0.1",
