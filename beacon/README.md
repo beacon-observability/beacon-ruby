@@ -5,7 +5,8 @@ Beacon Ruby starts from the complete official
 source and Git history. This is an independent downstream repository, not a GitHub
 fork. The source repository is
 [beacon-observability/beacon-ruby](https://github.com/beacon-observability/beacon-ruby).
-No Beacon Ruby release has been published.
+The initial source release is `v1.0.0`. See the [source installation guide](INSTALLATION.md)
+and [release notes](releases/1.0.0.md) for the fixed release scope and limitations.
 
 The selected maintenance model preserves instrumentation sources so that future
 Beacon changes can be made and reviewed in their native modules without losing
@@ -23,8 +24,8 @@ implementation being migrated in this import.
 - [Contributing](../CONTRIBUTING.md) and the
   [instrumentation guide](../instrumentation/CONTRIBUTING.md) describe the upstream
   development tools and component tests.
-- [Release prerequisites](RELEASING.md) describe the work required before a Beacon
-  release can be published.
+- [Release maintenance](RELEASING.md) describes source packaging, acceptance, and
+  GitHub publication.
 
 Use Ruby 3.3 or newer as required by the imported gem specifications. This is an
 upstream requirement, not a validated Beacon support matrix. Each gem retains its
@@ -62,9 +63,9 @@ before adopting any automation.
 The import retains upstream instrumentation behavior and package identities. Three
 Net::HTTP connection-error tests use a deterministic socket failure instead of
 relying on an external host. A [local acceptance harness](validation/README.md)
-checks HTTP trace delivery and correlation against an actual Collector. Beacon
-packaging, configuration, enhancements, and release support remain to be designed
-and validated in this language repository.
+checks HTTP trace delivery and correlation against an actual Collector. The initial
+release distributes source through GitHub. A Beacon-specific installable gem,
+configuration layer, and enhancements remain future work in this language repository.
 
 ## Initial Import Verification
 
@@ -77,5 +78,5 @@ official source and installing the development dependencies.
 The shared base tests and all three Net::HTTP semantic modes passed. Local
 HTTP/protobuf delivery to OpenTelemetry Collector 0.135.0 was verified. See the
 [acceptance record](validation/README.md) for commands, exact dependency locks,
-results, and the limits of this verification. These checks do not establish an
-official Beacon distribution or a complete supported runtime matrix.
+results, and the limits of this verification. The source release retains this narrow
+acceptance scope and does not establish a complete supported runtime matrix.

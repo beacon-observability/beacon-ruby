@@ -21,8 +21,8 @@ Core API, SDK, and exporter code comes from
 [OpenTelemetry Ruby Core](https://github.com/open-telemetry/opentelemetry-ruby) as
 gem dependencies. The imported component gem specifications and Gemfiles define
 their constraints. The [acceptance harness](validation/README.md) pins a narrow
-test combination in its own Bundler lockfile. This is not the dependency lock or
-support matrix of a Beacon distribution, which has not been established.
+test combination in its own Bundler lockfile. This is not a dependency lock for
+every imported gem or a complete runtime support matrix.
 
 ## Local Repository Configuration
 
