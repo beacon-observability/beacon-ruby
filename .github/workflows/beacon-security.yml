@@ -1,0 +1,48 @@
+name: Beacon Security
+
+on:
+  push:
+    paths: ["security/**", ".github/workflows/beacon-security.yml"]
+  pull_request:
+    paths: ["security/**", ".github/workflows/beacon-security.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  security:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        ruby: ["3.3", "3.4", "4.0"]
+    services:
+      postgres:
+        image: postgres:16.15
+        env:
+          POSTGRES_PASSWORD: beacon-local-test
+        ports: ["5432/tcp"]
+        options: --health-cmd="pg_isready -U postgres" --health-interval=5s --health-timeout=5s --health-retries=12
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: beacon-local-test
+          MYSQL_DATABASE: security_test
+        ports: ["3306/tcp"]
+        options: --health-cmd="mysqladmin ping -h localhost" --health-interval=5s --health-timeout=5s --health-retries=24
+    defaults:
+      run:
+        working-directory: security
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y libmariadb-dev libmariadb-dev-compat
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          working-directory: security
+      - run: bundle exec rake test
+        env:
+          BEACON_TEST_PG_PORT: ${{ job.services.postgres.ports[5432] }}
+          BEACON_TEST_MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
+      - run: bundle exec rake yard
+      - run: mkdir -p pkg && gem build beacon-security.gemspec --output pkg/beacon-security-0.1.0.gem

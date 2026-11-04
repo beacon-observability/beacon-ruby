@@ -64,8 +64,10 @@ The import retains upstream instrumentation behavior and package identities. Thr
 Net::HTTP connection-error tests use a deterministic socket failure instead of
 relying on an external host. A [local acceptance harness](validation/README.md)
 checks HTTP trace delivery and correlation against an actual Collector. The initial
-release distributes source through GitHub. A Beacon-specific installable gem,
-configuration layer, and enhancements remain future work in this language repository.
+release distributes source through GitHub. Current development adds an opt-in
+[Security gem](../security/README.md) for local evaluation and a scoped
+[Security CI workflow](../.github/workflows/beacon-security.yml). The gem is
+unreleased and is not part of the v1.0.0 source release.
 
 ## Initial Import Verification
 

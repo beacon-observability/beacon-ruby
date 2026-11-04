@@ -31,3 +31,7 @@ tags
 !**/*/.gitkeep
 
 node_modules
+
+# Security acceptance dependency lock and generated appraisals
+!security/Gemfile.lock
+security/gemfiles/

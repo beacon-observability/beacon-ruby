@@ -1,0 +1,5 @@
+inherit_from: ../.rubocop.yml
+
+# State-based integration tests keep each complete scenario together.
+Minitest/MultipleAssertions:
+  Enabled: false
