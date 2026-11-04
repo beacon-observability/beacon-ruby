@@ -1,37 +1,39 @@
-# Beacon Ruby v1.0.0 Source Installation
+# Beacon Ruby v1.1.0 Source Installation
 
-`v1.0.0` distributes the complete Beacon Ruby source snapshot through GitHub
+`v1.1.0` distributes the complete Beacon Ruby source snapshot through GitHub
 Releases. It preserves official OpenTelemetry Ruby Contrib gem identities and
-versions, with Core API, SDK, and exporter gems used as dependencies. This release
+versions, with Core API, SDK, and exporter gems used as dependencies. It adds the opt-in `beacon-security-0.1.0.gem` GitHub Release asset. This release
 does not publish a `beacon-ruby` gem, an executable agent, or a zero-code preload.
 
 The validated environment is Ubuntu 24.04 x86_64 with CRuby 3.3.12 and Bundler
-2.5.22. The source gem specifications require Ruby 3.3 or newer, but other Ruby
-versions, engines, and platforms have not been qualified by this release.
+2.5.22. The source gem specifications require Ruby 3.3 or newer, with Security integration CI also passing on Linux CRuby 3.3, 3.4 and 4.0.
+Collector acceptance remains scoped to CRuby 3.3.12; other engines and platforms
+have not been qualified.
 
 ## Download and Verify
 
-Download the three assets from the
-[v1.0.0 GitHub Release](https://github.com/beacon-observability/beacon-ruby/releases/tag/v1.0.0)
+Download the four assets from the
+[v1.1.0 GitHub Release](https://github.com/beacon-observability/beacon-ruby/releases/tag/v1.1.0)
 into a new directory:
 
 ```sh
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.0.0/beacon-ruby-1.0.0-source.tar.gz
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.0.0/SOURCE.txt
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.0.0/SHA256SUMS
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.1.0/beacon-ruby-1.1.0-source.tar.gz
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.1.0/beacon-security-0.1.0.gem
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.1.0/SOURCE.txt
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.1.0/SHA256SUMS
 sha256sum -c SHA256SUMS
-tar -xzf beacon-ruby-1.0.0-source.tar.gz
-cd beacon-ruby-1.0.0
+tar -xzf beacon-ruby-1.1.0-source.tar.gz
+cd beacon-ruby-1.1.0
 ```
 
 `SOURCE.txt` records the exact Beacon source commit and official upstream baseline.
 The archive includes source and licenses; it does not include `.git` history,
-downloaded dependencies, or a prebuilt Beacon gem. Full history remains available
+downloaded dependencies. The Security gem is a separate checksum-verified asset. Full history remains available
 in the source repository. As an alternative to the archive, clone the fixed tag:
 
 ```sh
-git clone --branch v1.0.0 --single-branch https://github.com/beacon-observability/beacon-ruby.git beacon-ruby-1.0.0
-cd beacon-ruby-1.0.0
+git clone --branch v1.1.0 --single-branch https://github.com/beacon-observability/beacon-ruby.git beacon-ruby-1.1.0
+cd beacon-ruby-1.1.0
 ```
 
 ## Verify the Selected Instrumentation Path
@@ -59,18 +61,50 @@ the selected Net::HTTP path. Refer to the component documentation before adaptin
 it; the imported Rails and other framework integrations are not qualified by this
 release. Complete test results and limitations are in the
 [source import acceptance record](validation/README.md) and
-[v1.0.0 release notes](releases/1.0.0.md).
+[v1.1.0 release notes](releases/1.1.0.md).
+
+## Enable Security
+
+Security is opt-in and uses an application's existing OpenTelemetry Logs SDK and
+exporter configuration. The gem is distributed on GitHub, not RubyGems. From the
+directory containing the downloaded assets:
+
+```sh
+gem install ./beacon-security-0.1.0.gem --no-document
+```
+
+The runtime dependencies come from RubyGems. Add the installed exact version to
+an application's Gemfile, or use the extracted source with
+`gem 'beacon-security', path: '/absolute/path/to/beacon-ruby-1.1.0/security'`.
+Require the application's clients before `Beacon::Security.start`, and add
+`Beacon::Security::Middleware` inside its OTel Rack server-span middleware.
+Set `BEACON_SECURITY_ENABLED=true`; local diagnostic files remain disabled.
+
+For a synthetic Security receiver check from the extracted repository root:
+
+```sh
+cd security
+BUNDLE_FROZEN=true bundle install
+BUNDLE_FROZEN=true python3 test/collector_smoke.py
+```
+
+This development test bundle also includes database client gems; MySQL's native
+gem needs client development headers/libraries. Applications need only the runtime
+gem dependencies and their own Rack/SDK/exporter/client dependencies. See the
+[Security guide](../security/README.md) for complete startup and shutdown examples,
+configuration, modeled sources/sinks, budgets and limits, and the
+[release acceptance](validation/security-1.1.0.md) for artifact verification.
+Findings use approximate substring correlation with unknown attack evidence;
+they are not confirmed vulnerabilities. Runtime inventory covers activated gems.
 
 ## Upgrade and Rollback
 
-Keep each version in a separate directory and retain the verified archive,
-`SOURCE.txt`, checksums, dependency lock files, and the previous application's
-configuration. Review the next release's notes and validate its artifacts before
-changing an application's source or dependency references.
+Keep each version in a separate directory and retain the verified archive, gem,
+`SOURCE.txt`, checksums, application Gemfile/lockfile and initialization. Review
+release notes before changing source or dependency references.
 
-To roll back an integration, restore the previously verified source reference,
-application Gemfile and lockfile, and SDK initialization, then restart the
-application and verify telemetry. For this initial release, an application with
-no previous Beacon Ruby integration can restore its original dependencies and
-initialization. Do not treat a component source tag as permission to overwrite
-already published upstream gems.
+To disable Security, set `BEACON_SECURITY_ENABLED=false` and restart the process.
+To roll back the release, restore the previous verified source reference,
+application Gemfile/lockfile and SDK initialization, restart and verify telemetry.
+The v1.0.0 release has no Security capability. Do not overwrite upstream gems or
+previously published Beacon assets.

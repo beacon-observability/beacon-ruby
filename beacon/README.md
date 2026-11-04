@@ -5,8 +5,8 @@ Beacon Ruby starts from the complete official
 source and Git history. This is an independent downstream repository, not a GitHub
 fork. The source repository is
 [beacon-observability/beacon-ruby](https://github.com/beacon-observability/beacon-ruby).
-The initial source release is `v1.0.0`. See the [source installation guide](INSTALLATION.md)
-and [release notes](releases/1.0.0.md) for the fixed release scope and limitations.
+The current source release is `v1.1.0`. See the [source installation guide](INSTALLATION.md)
+and [release notes](releases/1.1.0.md) for the fixed release scope and limitations.
 
 The selected maintenance model preserves instrumentation sources so that future
 Beacon changes can be made and reviewed in their native modules without losing
@@ -66,8 +66,8 @@ relying on an external host. A [local acceptance harness](validation/README.md)
 checks HTTP trace delivery and correlation against an actual Collector. The initial
 release distributes source through GitHub. Current development adds an opt-in
 [Security gem](../security/README.md) for local evaluation and a scoped
-[Security CI workflow](../.github/workflows/beacon-security.yml). The gem is
-unreleased and is not part of the v1.0.0 source release.
+[Security CI workflow](../.github/workflows/beacon-security.yml). The Security gem
+is distributed as a separate GitHub asset in v1.1.0, not on RubyGems.
 
 ## Initial Import Verification
 
