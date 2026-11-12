@@ -1,12 +1,15 @@
-<!-- Describe what problem you are solving and how this fixes it. Link to the associated issue if applicable. -->
 #### Description
 
-Fixes # (issue)
+<!-- Describe the problem and how this PR solves it. Link an associated issue when applicable. -->
 
-<!-- Provide a concise summary of the changes in this PR -->
 #### Changes
 
-<!--Authorship attestation. See AGENTS.md for details. AI agents must not check this box on behalf of the user; the human author must check it themselves before the PR is ready for review.-->
-#### Authorship
+<!-- Summarize the implemented changes. -->
 
-- [ ] I, a human, wrote this pull request description myself.
+#### Validation
+
+<!-- List checks performed and any known limitations. -->
+
+#### AI assistance
+
+<!-- Disclose significant AI assistance, including assistance with this description, or state None. -->

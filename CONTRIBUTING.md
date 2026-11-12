@@ -231,16 +231,16 @@ Therefore, please scope each pull request to include a single change.
 
 ### AI-assisted contributions
 
-If you use an AI tool to help author a pull request, you (the human) are still
-responsible for writing the PR description and any comments posted on the issue
-or PR. AI agents must prompt you for the content of each section in the PR
-template and use your answers verbatim rather than generating description
-content on their own. The PR template includes an authorship checkbox that you
-must check yourself before the PR is ready for review. See [AGENTS.md](AGENTS.md)
-for the full set of rules that apply to AI-assisted contributions.
+In this Beacon repository, AI agents may draft and update English pull request
+descriptions using the [pull request template](.github/pull_request_template.md)
+when the user requests a PR. Descriptions must accurately summarize the changes,
+verification results, and significant AI assistance. The user does not need to
+write each section, and AI-generated descriptions must not claim human authorship.
 
-Using these tools is not discouraged, but maintainers may close pull requests
-that rely on AI output the author has not reviewed, per the OpenTelemetry
+Maintainers remain responsible for reviewing the contribution and its accuracy.
+See [AGENTS.md](AGENTS.md) for the full rules, including restrictions on posting
+issue and PR comments. Contributions to upstream OpenTelemetry repositories must
+follow their own authorship rules and the
 [Generative AI contribution policy][otel-genai-policy].
 
 ### Sign the Contributor License Agreement (CLA)
