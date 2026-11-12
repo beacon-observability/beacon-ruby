@@ -1,0 +1,27 @@
+# frozen_string_literal: true
+
+require 'bundler/gem_tasks'
+require 'rake/testtask'
+require 'fileutils'
+Rake::TestTask.new(:test) do |t|
+  t.libs << 'lib' << 'test'
+  t.test_files = FileList['test/**/*_test.rb']
+end
+task default: :test
+
+# Path gems need an explicit local build; installed gems use spec.extensions.
+task :compile do
+  extension = File.join(__dir__, 'ext/beacon_profiling')
+  output = File.join(__dir__, 'lib/beacon/profiling/native_ext.so')
+  sources = Dir[File.join(extension, '*.{c,h,rb}')]
+  next if File.exist?(output) && sources.all? { |source| File.mtime(source) <= File.mtime(output) }
+
+  Dir.chdir(extension) do
+    ruby 'extconf.rb'
+    sh 'make'
+    temporary = "#{output}.tmp-#{Process.pid}"
+    FileUtils.cp('native_ext.so', temporary)
+    File.rename(temporary, output)
+  end
+end
+Rake::Task[:test].enhance([:compile])

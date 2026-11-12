@@ -1,0 +1,12 @@
+/coverage/
+/.bundle/
+/*.gem
+/otel-profiles/
+/pkg/
+/gemfiles/
+!/Gemfile.lock
+/lib/beacon/profiling/*.so
+/ext/beacon_profiling/Makefile
+/ext/beacon_profiling/mkmf.log
+/ext/beacon_profiling/*.o
+/ext/beacon_profiling/*.so

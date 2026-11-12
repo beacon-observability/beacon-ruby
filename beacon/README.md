@@ -82,3 +82,9 @@ HTTP/protobuf delivery to OpenTelemetry Collector 0.135.0 was verified. See the
 [acceptance record](validation/README.md) for commands, exact dependency locks,
 results, and the limits of this verification. The source release retains this narrow
 acceptance scope and does not establish a complete supported runtime matrix.
+
+## Profiling development
+
+The source tree now includes an experimental, opt-in [profiling gem](../profiling/README.md)
+with CPU, wall, allocation and exception sampling, pprof files, and HTTP multipart export. It is not part
+of the published source releases described above.

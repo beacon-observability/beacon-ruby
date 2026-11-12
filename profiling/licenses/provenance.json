@@ -1,0 +1,15 @@
+{
+  "upstream": "https://github.com/DataDog/dd-trace-rb",
+  "version": "2.48.0",
+  "license": "BSD-3-Clause",
+  "files": {
+    "heap_recorder.c": "e870fc3cf9751e5e8a7088d7ecf118188155b03b28ec2526770df13e5dc18375",
+    "gvl_profiling_helper.c": "4e9b773296e6d18ae7e07e7e1af438dd88b57d347e4b4aa8ce6e4dfc89bfd4e7",
+    "gvl_profiling_helper.h": "f03722664d530868d4db66e9413fc6861057c2dc9a7c21944d078e769bdd0b9a"
+  },
+  "adaptations": {
+    "gvl_tls.c": "Adapted thread storage helper",
+    "gvl_tls.h": "Adapted public Ruby 3.3+ branch of helper",
+    "native_ext.c": "Beacon implementation of bounded deferred allocation tracking inspired by heap_recorder pending-recording and weak-map design; no libdatadog storage or private VM headers"
+  }
+}
