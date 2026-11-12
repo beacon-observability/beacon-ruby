@@ -88,6 +88,36 @@ class PprofTest < Minitest::Test
     assert_equal [3, 3_000_000], decode(profile[2].first)[2]
     assert_nil Beacon::Profiling::Pprof.encode(entries, 1, 2)
   end
+
+  def test_file_exports_keep_each_native_slices_start_and_duration
+    Dir.mktmpdir do |dir|
+      config = Beacon::Profiling::Config.new('OTEL_PROFILING_PPROF_PATH' => dir)
+      session = Beacon::Profiling::Session.new(config)
+      slice = 30_000_000_000
+      started = 1_700_000_000_000_000_000
+      clock = [slice, slice * 2]
+      session.define_singleton_method(:monotonic) { clock.shift }
+      entries = %i[cpu object].each_with_index.flat_map do |mode, index|
+        profile = { mode: mode, interval: 1000, samples: 1, frames: { 1 => { name: 'work' } }, raw: [1, 1, 1] }
+        collector = Struct.new(:profile) do
+          def snapshot
+            [profile]
+          end
+        end.new(profile)
+        session.instance_variable_set(:@native, collector)
+        session.instance_variable_set(:@started, started + (index * slice))
+        session.instance_variable_set(:@monotonic, index * slice)
+        session.send(:snapshot).first
+      end
+      session.send(:export_batch, entries, started, slice * 2)
+      %w[cpu object].each_with_index do |mode, index|
+        file = Dir[File.join(dir, "ruby-#{mode}-*.pprof")].fetch(0)
+        profile = decode(Zlib::GzipReader.open(file, &:read))
+        assert_equal [started + (index * slice)], profile[9]
+        assert_equal [slice], profile[10]
+      end
+    end
+  end
 end
 
 # rubocop:enable Minitest/MultipleAssertions

@@ -136,6 +136,10 @@ module Beacon
           # An empty final heap snapshot clears earlier gauges in the export window.
           entry[:samples].positive? || entry[:mode] == :heap_objects || entry[:mode] == :heap_size
         end
+        profiles.each do |entry|
+          entry[:started] = @started
+          entry[:duration] = duration
+        end
         [profiles, @started, duration]
       end
 
@@ -206,7 +210,7 @@ module Beacon
         if @upload
           export(profiles, started, duration)
         else
-          profiles.each { |data| export(data, started, duration) }
+          profiles.each { |data| export(data, data.fetch(:started, started), data.fetch(:duration, duration)) }
         end
       end
 

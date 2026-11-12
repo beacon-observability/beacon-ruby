@@ -90,7 +90,8 @@ named `event.json`, with `language=ruby`, `family=ruby`, timestamps and resource
 tags. The legacy `profiler=ddtrace` value identifies the compatible DK multipart
 protocol. A single HTTP record contains the observed sample types for the complete
 export window, enabling type selection in the same profile detail. Local file
-export retains separate files for each collection slice. The layout
+export retains separate files for each collection slice, with that slice's actual
+start time and duration rather than the full export window. The layout
 matches the Ruby fixture in DataKit's profile input. Sample types are `cpu-time`,
 `wall-time` (nanoseconds), `alloc-samples` and `exception-samples` (counts), plus
 unweighted `samples` counts. Files are gzip-compressed pprof protobuf.

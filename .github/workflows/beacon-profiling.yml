@@ -1,0 +1,36 @@
+name: Beacon Profiling
+
+on:
+  push:
+    paths:
+      ["profiling/**", ".simplecov", ".github/workflows/beacon-profiling.yml"]
+  pull_request:
+    paths:
+      ["profiling/**", ".simplecov", ".github/workflows/beacon-profiling.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  profiling:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.3", "3.4", "4.0"]
+    defaults:
+      run:
+        working-directory: profiling
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          working-directory: profiling
+      - run: bundle exec rake compile
+      - run: bundle exec rake test
+      - run: bundle exec appraisal install
+      - run: bundle exec appraisal rake test
+      - run: bundle exec rake build
