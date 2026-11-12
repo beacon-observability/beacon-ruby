@@ -1,29 +1,30 @@
-# Beacon Ruby v1.1.0 Source Installation
+# Beacon Ruby v1.2.0 Source Installation
 
-`v1.1.0` distributes the complete Beacon Ruby source snapshot through GitHub
+`v1.2.0` distributes the complete Beacon Ruby source snapshot through GitHub
 Releases. It preserves official OpenTelemetry Ruby Contrib gem identities and
-versions, with Core API, SDK, and exporter gems used as dependencies. It adds the opt-in `beacon-security-0.1.0.gem` GitHub Release asset. This release
+versions, with Core API, SDK, and exporter gems used as dependencies. It includes opt-in Security and experimental profiling gems as GitHub Release assets. This release
 does not publish a `beacon-ruby` gem, an executable agent, or a zero-code preload.
 
 The validated environment is Ubuntu 24.04 x86_64 with CRuby 3.3.12 and Bundler
-2.5.22. The source gem specifications require Ruby 3.3 or newer, with Security integration CI also passing on Linux CRuby 3.3, 3.4 and 4.0.
+2.5.22. The source gem specifications require Ruby 3.3 or newer, with Security and profiling CI also passing on Linux CRuby 3.3, 3.4 and 4.0.
 Collector acceptance remains scoped to CRuby 3.3.12; other engines and platforms
 have not been qualified.
 
 ## Download and Verify
 
-Download the four assets from the
-[v1.1.0 GitHub Release](https://github.com/beacon-observability/beacon-ruby/releases/tag/v1.1.0)
+Download the five assets from the
+[v1.2.0 GitHub Release](https://github.com/beacon-observability/beacon-ruby/releases/tag/v1.2.0)
 into a new directory:
 
 ```sh
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.1.0/beacon-ruby-1.1.0-source.tar.gz
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.1.0/beacon-security-0.1.0.gem
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.1.0/SOURCE.txt
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.1.0/SHA256SUMS
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/beacon-ruby-1.2.0-source.tar.gz
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/beacon-security-0.1.0.gem
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/beacon-profiling-0.1.0.gem
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/SOURCE.txt
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/SHA256SUMS
 sha256sum -c SHA256SUMS
-tar -xzf beacon-ruby-1.1.0-source.tar.gz
-cd beacon-ruby-1.1.0
+tar -xzf beacon-ruby-1.2.0-source.tar.gz
+cd beacon-ruby-1.2.0
 ```
 
 `SOURCE.txt` records the exact Beacon source commit and official upstream baseline.
@@ -32,8 +33,8 @@ downloaded dependencies. The Security gem is a separate checksum-verified asset.
 in the source repository. As an alternative to the archive, clone the fixed tag:
 
 ```sh
-git clone --branch v1.1.0 --single-branch https://github.com/beacon-observability/beacon-ruby.git beacon-ruby-1.1.0
-cd beacon-ruby-1.1.0
+git clone --branch v1.2.0 --single-branch https://github.com/beacon-observability/beacon-ruby.git beacon-ruby-1.2.0
+cd beacon-ruby-1.2.0
 ```
 
 ## Verify the Selected Instrumentation Path
@@ -61,7 +62,7 @@ the selected Net::HTTP path. Refer to the component documentation before adaptin
 it; the imported Rails and other framework integrations are not qualified by this
 release. Complete test results and limitations are in the
 [source import acceptance record](validation/README.md) and
-[v1.1.0 release notes](releases/1.1.0.md).
+[v1.2.0 release notes](releases/1.2.0.md).
 
 ## Enable Security
 
@@ -75,7 +76,7 @@ gem install ./beacon-security-0.1.0.gem --no-document
 
 The runtime dependencies come from RubyGems. Add the installed exact version to
 an application's Gemfile, or use the extracted source with
-`gem 'beacon-security', path: '/absolute/path/to/beacon-ruby-1.1.0/security'`.
+`gem 'beacon-security', path: '/absolute/path/to/beacon-ruby-1.2.0/security'`.
 Require the application's clients before `Beacon::Security.start`, and add
 `Beacon::Security::Middleware` inside its OTel Rack server-span middleware.
 Set `BEACON_SECURITY_ENABLED=true`; local diagnostic files remain disabled.
@@ -93,9 +94,48 @@ gem needs client development headers/libraries. Applications need only the runti
 gem dependencies and their own Rack/SDK/exporter/client dependencies. See the
 [Security guide](../security/README.md) for complete startup and shutdown examples,
 configuration, modeled sources/sinks, budgets and limits, and the
-[release acceptance](validation/security-1.1.0.md) for artifact verification.
+[release acceptance](validation/security-1.2.0.md) for artifact verification.
 Findings use approximate substring correlation with unknown attack evidence;
 they are not confirmed vulnerabilities. Runtime inventory covers activated gems.
+
+## Enable Experimental Profiling
+
+Install the verified GitHub asset using CRuby 3.3+ on Linux with development
+headers and a C11 compiler:
+
+```sh
+gem install ./beacon-profiling-0.1.0.gem --no-document
+```
+
+Add `gem 'beacon-profiling', '= 0.1.0'` to the application's Gemfile and run
+`bundle install`. Alternatively use the extracted `profiling` directory as a
+Bundler `path:` dependency. Start the application after Bundler resolves its gems:
+
+```sh
+export OTEL_PROFILING_ENABLED=true
+export OTEL_PROFILING_EXPORTER=datakit
+export OTEL_PROFILING_PPROF_UPLOAD_URL=http://127.0.0.1:9529/profiling/v1/input
+export OTEL_PROFILING_TYPES=wall,cpu
+export OTEL_PROFILING_MEMORY_ENABLED=true
+export OTEL_PROFILING_BACKEND=beacon
+export OTEL_PROFILING_HEAP_ENABLED=true
+export OTEL_PROFILING_GVL_ENABLED=true
+export OTEL_SERVICE_NAME=my-ruby-service
+bundle exec ruby -rbeacon/profiling/auto app.rb
+```
+
+This preload enables profiling only; trace SDK setup remains explicit. DataKit
+must have its profiling input enabled. Uploads combine observed sample types into
+one pprof profile per 60-second window. Shutdown flushes a shorter tail with its
+actual duration. CPU and allocation sampling share slices within each window;
+wall, heap and GVL collection run alongside them. Heap bytes estimate sampled
+shallow live object memory, not RSS or cumulative allocations. GVL timeline
+rendering is receiver-dependent and has not been verified in the UI.
+
+For Puma or Unicorn, follow the explicit worker lifecycle hooks in the
+[profiling guide](../profiling/README.md). Do not run competing native profilers.
+See [profiling acceptance](../profiling/ACCEPTANCE.md) for validation and limits.
+Disable with `OTEL_PROFILING_ENABLED=false` and restart the application.
 
 ## Upgrade and Rollback
 

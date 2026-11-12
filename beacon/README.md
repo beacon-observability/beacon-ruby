@@ -5,8 +5,8 @@ Beacon Ruby starts from the complete official
 source and Git history. This is an independent downstream repository, not a GitHub
 fork. The source repository is
 [beacon-observability/beacon-ruby](https://github.com/beacon-observability/beacon-ruby).
-The current source release is `v1.1.0`. See the [source installation guide](INSTALLATION.md)
-and [release notes](releases/1.1.0.md) for the fixed release scope and limitations.
+The current source release is `v1.2.0`. See the [source installation guide](INSTALLATION.md)
+and [release notes](releases/1.2.0.md) for the fixed release scope and limitations.
 
 The selected maintenance model preserves instrumentation sources so that future
 Beacon changes can be made and reviewed in their native modules without losing
@@ -56,7 +56,8 @@ runtime environments, or a real receiver path.
 The inherited workflows are archived under
 [`upstream-workflows/`](upstream-workflows/), outside GitHub's executable workflow
 directory. They remain upstream reference material, including publishing and bot
-configuration. No Beacon CI or release workflow is enabled in this initial import.
+configuration. The initial import disabled upstream automation; Beacon now has scoped Security
+and profiling CI. Upstream publishing workflows remain archived.
 Review required permissions, package ownership, destinations, and execution cost
 before adopting any automation.
 
@@ -66,8 +67,8 @@ relying on an external host. A [local acceptance harness](validation/README.md)
 checks HTTP trace delivery and correlation against an actual Collector. The initial
 release distributes source through GitHub. Current development adds an opt-in
 [Security gem](../security/README.md) for local evaluation and a scoped
-[Security CI workflow](../.github/workflows/beacon-security.yml). The Security gem
-is distributed as a separate GitHub asset in v1.1.0, not on RubyGems.
+[Security CI workflow](../.github/workflows/beacon-security.yml). The Security and experimental profiling gems
+are distributed as separate GitHub assets in v1.2.0, not on RubyGems.
 
 ## Initial Import Verification
 
