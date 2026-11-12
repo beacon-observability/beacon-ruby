@@ -5,6 +5,11 @@ Beacon Ruby versions identify independent source snapshots. The initial version 
 versions. This process publishes to GitHub Releases, not RubyGems. The archived
 upstream publishing workflows are reference material and must remain disabled.
 
+The v1.1.0 source release additionally distributes the independently versioned
+`beacon-security-0.1.0.gem` as a GitHub asset. Its name and version are distinct
+from the Beacon source version; this does not authorize RubyGems publication.
+Security CI is Beacon-owned and does not enable archived upstream publishers.
+
 ## Prepare and Validate
 
 1. Start from a clean downstream branch containing the reviewed upstream baseline.
@@ -23,13 +28,18 @@ upstream publishing workflows are reference material and must remain disabled.
 Run from the repository root, using a new output directory outside the source tree:
 
 ```sh
-beacon_release_version=1.0.0
+beacon_release_version=1.1.0
 beacon_release_commit=$(git rev-parse HEAD)
 beacon_release_dir=../beacon-ruby-release-${beacon_release_version}
 mkdir "$beacon_release_dir"
 git archive --format=tar --prefix="beacon-ruby-${beacon_release_version}/" "$beacon_release_commit" |
   gzip -n > "$beacon_release_dir/beacon-ruby-${beacon_release_version}-source.tar.gz"
 ```
+
+For a release including Security, build its gem from the extracted committed
+source and add the tested gem to `SHA256SUMS` and the Release assets. Include the
+Security specification commit, schema/fingerprint versions and gem version in
+provenance. Run Security tests, its Collector harness and isolated gem acceptance.
 
 Create `SOURCE.txt` in the output directory with the product version, exact source
 commit, intended tag, official upstream repository, adopted upstream tag and full
@@ -63,13 +73,13 @@ target commit, asset names, sizes, and digests, then publish the release. No
 RubyGems credentials or upstream publishing identity are needed for this source
 release process.
 
-After publication, download all three assets from the public release and verify
+After publication, download all release assets from the public release and verify
 `SHA256SUMS` again. Run acceptance from the downloaded archive, confirm that
 version-pinned documentation is publicly accessible, and update the product
 repository's [language index](https://github.com/beacon-observability/beacon/blob/main/docs/languages.md#ruby).
 The release record is authoritative for the published artifact scope.
 
-A future installable Beacon gem requires a separate package identity, confirmed
+Publication of a Beacon gem on RubyGems requires a separate package identity, confirmed
 RubyGems ownership and publication permission, clean artifact installation,
 versioned application configuration, and validation of its declared runtime and
 instrumentation support. A source release does not imply that this work is complete.

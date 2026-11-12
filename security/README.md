@@ -1,8 +1,8 @@
 # Beacon Security for Ruby
 
 An opt-in runtime observation gem for Linux CRuby 3.3+, developed independently of
-upstream OpenTelemetry instrumentation. This source addition is unreleased and is
-not included in Beacon Ruby v1.0.0.
+upstream OpenTelemetry instrumentation. Released in Beacon Ruby v1.1.0 as the separate `beacon-security-0.1.0.gem`
+GitHub asset; it is not published on RubyGems. Beacon Ruby v1.0.0 does not include it.
 
 The implementation pins [Beacon Security specification](https://github.com/beacon-observability/beacon-security-spec)
 commit `af1b834501210bfd197bf606163680129cc5d09b`, emits **schema v2**, and implements
