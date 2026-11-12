@@ -23,6 +23,7 @@ module Beacon
         profiles = profiles.each_with_index.filter_map do |entry, index|
           entry unless gauges.include?(entry[:mode]) && latest[entry[:mode]] != index
         end
+        profiles.reject! { |entry| (entry[:raw] || []).empty? }
         names = { cpu: 'cpu-time', wall: 'wall-time', object: 'alloc-samples', exceptions: 'exception-samples',
                   heap_objects: 'heap-live-samples', heap_size: 'heap-live-size', gvl_wait: 'gvl-wait-time', timeline: 'timeline' }
         microsecond_modes = %i[cpu wall]

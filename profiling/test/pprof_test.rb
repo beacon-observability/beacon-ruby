@@ -64,6 +64,30 @@ class PprofTest < Minitest::Test
     heap_type = decode(profile[1][types.index('heap-live-size')])
     assert_equal 'bytes', strings[heap_type[2].first]
   end
+
+  def test_final_empty_heap_slice_clears_previous_gauges_without_losing_cpu
+    heap = { interval: 1, samples: 1, frames: { 1 => { name: 'allocate' } }, raw: [1, 1, 200] }
+    first = %i[heap_objects heap_size].map { |mode| heap.merge(mode: mode) }
+    empty = first.map { |entry| entry.merge(samples: 0, frames: {}, raw: []) }
+    collector = Struct.new(:snapshots) do
+      def snapshot
+        snapshots.shift
+      end
+    end.new([first, empty])
+    config = Beacon::Profiling::Config.new('OTEL_PROFILING_TYPES' => 'cpu', 'OTEL_PROFILING_EXPORTER' => 'pprof')
+    session = Beacon::Profiling::Session.new(config)
+    session.instance_variable_set(:@native, collector)
+    session.instance_variable_set(:@monotonic, Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond))
+    entries = session.send(:snapshot).first + session.send(:snapshot).first
+    cpu = { mode: :cpu, interval: 1000, samples: 3, frames: { 1 => { name: 'compute' } }, raw: [1, 1, 3] }
+    encoded = Beacon::Profiling::Pprof.encode([cpu, *entries], 1, 2)
+    profile = decode(Zlib.gunzip(encoded))
+    strings = profile[6]
+    types = profile[1].map { |value| strings[decode(value)[1].first] }
+    assert_equal %w[samples cpu-time], types
+    assert_equal [3, 3_000_000], decode(profile[2].first)[2]
+    assert_nil Beacon::Profiling::Pprof.encode(entries, 1, 2)
+  end
 end
 
 # rubocop:enable Minitest/MultipleAssertions

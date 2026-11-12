@@ -132,7 +132,10 @@ module Beacon
           data = StackProf.results
         end
         duration = monotonic - @monotonic
-        profiles = [data, @wall&.snapshot, @exceptions&.snapshot, *@native&.snapshot].compact.select { |entry| entry[:samples].positive? }
+        profiles = [data, @wall&.snapshot, @exceptions&.snapshot, *@native&.snapshot].compact.select do |entry|
+          # An empty final heap snapshot clears earlier gauges in the export window.
+          entry[:samples].positive? || entry[:mode] == :heap_objects || entry[:mode] == :heap_size
+        end
         [profiles, @started, duration]
       end
 
