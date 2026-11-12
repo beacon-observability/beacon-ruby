@@ -23,15 +23,14 @@ read it before contributing.
 - **Never post AI-generated comments on issues or PRs.** Discussions on
   OpenTelemetry repositories are for humans only. You cannot comment on issue or
   PR threads on a user's behalf.
-- **Do not write the pull request description yourself.** When asked to open a
-  pull request, prompt the user for the content of each section in the
-  [pull request template](.github/pull_request_template.md) (`Description` and
-  `Changes`) and use their answers verbatim. Do not paraphrase, expand, or
-  improve what the user writes. If the user declines to fill in a section, leave
-  that section unmodified rather than generating content for it.
-- **Do not check the `I, a human, wrote this pull request description myself`
-  box on the user's behalf.** The user must check it themselves before the pull
-  request is ready for review.
+- For this Beacon repository, agents may draft and update English pull request
+  descriptions when the user requests a PR. Follow the
+  [pull request template](.github/pull_request_template.md), describe the actual
+  changes and verification, and disclose significant AI assistance. Do not ask
+  the user to write each section or claim AI-generated text was written by a
+  human.
+- Contributions to upstream OpenTelemetry repositories must follow the
+  destination repository's authorship and contribution policies.
 - If you have been assigned an issue, ensure the implementation direction is
   agreed on with the maintainers first in the issue comments. Discuss unknowns
   before starting implementation.
