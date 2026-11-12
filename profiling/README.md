@@ -1,11 +1,16 @@
 # Beacon Ruby Profiling
 
-Opt-in, experimental profiling for CRuby 3.3+ on Linux. This source gem has not
-been published to RubyGems or included in a Beacon release.
+Opt-in, experimental profiling for CRuby 3.3+ on Linux. Beacon Ruby v1.2.0 distributes this gem
+as a GitHub Release asset; it is not published to RubyGems.
 
 ## Install and start
 
-Add to the application's Gemfile and run `bundle install`:
+Install the checksum-verified `beacon-profiling-0.1.0.gem` from the
+[v1.2.0 release](https://github.com/beacon-observability/beacon-ruby/releases/tag/v1.2.0)
+with `gem install ./beacon-profiling-0.1.0.gem --no-document`, then add
+`gem 'beacon-profiling', '= 0.1.0'` to the application's Gemfile. CRuby development
+headers and a C11 compiler are required. Alternatively use the released source
+and run `bundle install`:
 
 ```ruby
 gem 'beacon-profiling', path: '/absolute/path/to/beacon-ruby/profiling'
