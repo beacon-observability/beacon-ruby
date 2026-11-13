@@ -28,7 +28,12 @@ class CapabilitiesTest < Minitest::Test
   end
 
   def allocate_objects
-    10_000.times { Object.new }
+    # A short burst can finish between CPU samples on faster runtimes.
+    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + 0.02
+    loop do
+      10_000.times { Object.new }
+      break if Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
+    end
   end
 
   def test_rotating_wall_cpu_and_allocation_profiles_have_distinct_units
