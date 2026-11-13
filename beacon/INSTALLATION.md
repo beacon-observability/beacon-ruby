@@ -113,7 +113,7 @@ Bundler `path:` dependency. Start the application after Bundler resolves its gem
 
 ```sh
 export OTEL_PROFILING_ENABLED=true
-export OTEL_PROFILING_EXPORTER=datakit
+export OTEL_PROFILING_EXPORTER=otlp
 export OTEL_PROFILING_PPROF_UPLOAD_URL=http://127.0.0.1:9529/profiling/v1/input
 export OTEL_PROFILING_TYPES=wall,cpu
 export OTEL_PROFILING_MEMORY_ENABLED=true

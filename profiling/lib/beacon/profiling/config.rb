@@ -45,7 +45,7 @@ module Beacon
         @path = env.fetch('OTEL_PROFILING_PPROF_PATH', 'otel-profiles')
         @endpoint = env['OTEL_PROFILING_PPROF_UPLOAD_URL'] || env.fetch('OTEL_PROFILING_ENDPOINT', 'http://127.0.0.1:9529/profiling/v1/input')
         @exporter = env.fetch('OTEL_PROFILING_EXPORTER', env.key?('OTEL_PROFILING_PPROF_PATH') && !env.key?('OTEL_PROFILING_PPROF_UPLOAD_URL') ? 'pprof' : 'pprof_http')
-        @exporter = { 'file' => 'pprof', 'datakit' => 'pprof_http' }.fetch(@exporter, @exporter)
+        @exporter = { 'file' => 'pprof', 'otlp' => 'pprof_http', 'datakit' => 'pprof_http' }.fetch(@exporter, @exporter)
         raise ArgumentError, 'invalid exporter' unless %w[pprof pprof_http none].include?(@exporter)
 
         @timeout = numeric(env, 'UPLOAD_TIMEOUT', 5, 0.1..60)
