@@ -1,6 +1,8 @@
-# Beacon Ruby v1.2.0 Source Installation
+# Beacon Ruby v1.2.1 Source Installation
 
-`v1.2.0` distributes the complete Beacon Ruby source snapshot through GitHub
+Status: release preparation. Versioned downloads become available after publication.
+
+`v1.2.1` distributes the complete Beacon Ruby source snapshot through GitHub
 Releases. It preserves official OpenTelemetry Ruby Contrib gem identities and
 versions, with Core API, SDK, and exporter gems used as dependencies. It includes opt-in Security and experimental profiling gems as GitHub Release assets. This release
 does not publish a `beacon-ruby` gem, an executable agent, or a zero-code preload.
@@ -13,18 +15,18 @@ have not been qualified.
 ## Download and Verify
 
 Download the five assets from the
-[v1.2.0 GitHub Release](https://github.com/beacon-observability/beacon-ruby/releases/tag/v1.2.0)
+[v1.2.1 GitHub Release](https://github.com/beacon-observability/beacon-ruby/releases/tag/v1.2.1)
 into a new directory:
 
 ```sh
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/beacon-ruby-1.2.0-source.tar.gz
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/beacon-security-0.1.0.gem
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/beacon-profiling-0.1.0.gem
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/SOURCE.txt
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.0/SHA256SUMS
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/beacon-ruby-1.2.1-source.tar.gz
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/beacon-security-0.1.0.gem
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/beacon-profiling-0.1.1.gem
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/SOURCE.txt
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/SHA256SUMS
 sha256sum -c SHA256SUMS
-tar -xzf beacon-ruby-1.2.0-source.tar.gz
-cd beacon-ruby-1.2.0
+tar -xzf beacon-ruby-1.2.1-source.tar.gz
+cd beacon-ruby-1.2.1
 ```
 
 `SOURCE.txt` records the exact Beacon source commit and official upstream baseline.
@@ -33,8 +35,8 @@ downloaded dependencies. The Security gem is a separate checksum-verified asset.
 in the source repository. As an alternative to the archive, clone the fixed tag:
 
 ```sh
-git clone --branch v1.2.0 --single-branch https://github.com/beacon-observability/beacon-ruby.git beacon-ruby-1.2.0
-cd beacon-ruby-1.2.0
+git clone --branch v1.2.1 --single-branch https://github.com/beacon-observability/beacon-ruby.git beacon-ruby-1.2.1
+cd beacon-ruby-1.2.1
 ```
 
 ## Verify the Selected Instrumentation Path
@@ -62,7 +64,7 @@ the selected Net::HTTP path. Refer to the component documentation before adaptin
 it; the imported Rails and other framework integrations are not qualified by this
 release. Complete test results and limitations are in the
 [source import acceptance record](validation/README.md) and
-[v1.2.0 release notes](releases/1.2.0.md).
+[v1.2.1 release notes](releases/1.2.1.md).
 
 ## Enable Security
 
@@ -76,7 +78,7 @@ gem install ./beacon-security-0.1.0.gem --no-document
 
 The runtime dependencies come from RubyGems. Add the installed exact version to
 an application's Gemfile, or use the extracted source with
-`gem 'beacon-security', path: '/absolute/path/to/beacon-ruby-1.2.0/security'`.
+`gem 'beacon-security', path: '/absolute/path/to/beacon-ruby-1.2.1/security'`.
 Require the application's clients before `Beacon::Security.start`, and add
 `Beacon::Security::Middleware` inside its OTel Rack server-span middleware.
 Set `BEACON_SECURITY_ENABLED=true`; local diagnostic files remain disabled.
@@ -94,7 +96,7 @@ gem needs client development headers/libraries. Applications need only the runti
 gem dependencies and their own Rack/SDK/exporter/client dependencies. See the
 [Security guide](../security/README.md) for complete startup and shutdown examples,
 configuration, modeled sources/sinks, budgets and limits, and the
-[release acceptance](validation/security-1.2.0.md) for artifact verification.
+[release acceptance](validation/security-1.1.0.md) for artifact verification.
 Findings use approximate substring correlation with unknown attack evidence;
 they are not confirmed vulnerabilities. Runtime inventory covers activated gems.
 
@@ -104,10 +106,10 @@ Install the verified GitHub asset using CRuby 3.3+ on Linux with development
 headers and a C11 compiler:
 
 ```sh
-gem install ./beacon-profiling-0.1.0.gem --no-document
+gem install ./beacon-profiling-0.1.1.gem --no-document
 ```
 
-Add `gem 'beacon-profiling', '= 0.1.0'` to the application's Gemfile and run
+Add `gem 'beacon-profiling', '= 0.1.1'` to the application's Gemfile and run
 `bundle install`. Alternatively use the extracted `profiling` directory as a
 Bundler `path:` dependency. Start the application after Bundler resolves its gems:
 

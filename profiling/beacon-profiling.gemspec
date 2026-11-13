@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = 'beacon-profiling'
-  spec.version = '0.1.0'
+  spec.version = '0.1.1'
   spec.authors = ['Beacon Authors']
   spec.summary = 'Opt-in CPU, wall and heap profiling for Beacon Ruby'
   spec.homepage = 'https://github.com/beacon-observability/beacon-ruby'

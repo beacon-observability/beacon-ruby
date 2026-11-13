@@ -16,6 +16,9 @@ and validate profiling installation and the local DataKit receiver path. Release
 titles contain only the version tag, such as `v1.2.0`. After publication, submit a
 bilingual documentation update to `beacon-docs` through a PR.
 
+The v1.2.1 target updates the profiling gem to `0.1.1` while Security remains
+`0.1.0`. Keep component versions distinct from the source snapshot version.
+
 ## Prepare and Validate
 
 1. Start from a clean downstream branch containing the reviewed upstream baseline.
@@ -34,7 +37,7 @@ bilingual documentation update to `beacon-docs` through a PR.
 Run from the repository root, using a new output directory outside the source tree:
 
 ```sh
-beacon_release_version=1.2.0
+beacon_release_version=1.2.1
 beacon_release_commit=$(git rev-parse HEAD)
 beacon_release_dir=../beacon-ruby-release-${beacon_release_version}
 mkdir "$beacon_release_dir"

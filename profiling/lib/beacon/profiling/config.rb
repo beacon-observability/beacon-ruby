@@ -64,7 +64,7 @@ module Beacon
         end
         resource = pairs(env['OTEL_RESOURCE_ATTRIBUTES'], '=')
         @tags = { 'language' => 'ruby', 'runtime' => RUBY_ENGINE, 'runtime_version' => RUBY_VERSION,
-                  'profiler_version' => '0.1.0', 'host' => resource.fetch('host.name', Socket.gethostname),
+                  'profiler_version' => '0.1.1', 'host' => resource.fetch('host.name', Socket.gethostname),
                   'service' => env.fetch('OTEL_SERVICE_NAME', resource.fetch('service.name', 'unknown_service:ruby')),
                   'version' => resource['service.version'],
                   'env' => resource['deployment.environment.name'] || resource['deployment.environment'] }.compact
