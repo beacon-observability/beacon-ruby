@@ -69,7 +69,7 @@ class ExportTest < Minitest::Test
       socket.write("HTTP/1.1 200 OK\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
       socket.close
     end
-    env = { 'OTEL_PROFILING_ENABLED' => 'true', 'OTEL_PROFILING_EXPORTER' => 'otlp', 'OTEL_SERVICE_NAME' => 'profile-test',
+    env = { 'OTEL_PROFILING_ENABLED' => 'true', 'OTEL_PROFILING_EXPORTER' => 'http', 'OTEL_SERVICE_NAME' => 'profile-test',
             'OTEL_RESOURCE_ATTRIBUTES' => 'service.version=2,deployment.environment.name=local',
             'OTEL_PROFILING_PPROF_HEADERS' => 'X-Test:synthetic',
             'OTEL_PROFILING_ENDPOINT' => "http://127.0.0.1:#{server.addr[1]}/profiling/v1/input" }

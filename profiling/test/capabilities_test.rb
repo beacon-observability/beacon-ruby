@@ -107,12 +107,18 @@ class CapabilitiesTest < Minitest::Test
     end
   end
 
-  def test_otlp_name_selects_the_existing_datakit_exporter
-    %w[otlp datakit pprof_http].each do |name|
+  def test_http_name_selects_the_existing_datakit_exporter
+    %w[http datakit pprof_http].each do |name|
       config = Beacon::Profiling::Config.new(@env.merge('OTEL_PROFILING_EXPORTER' => name,
                                                         'OTEL_PROFILING_ENDPOINT' => 'http://127.0.0.1:9529/profiling/v1/input'))
       assert_equal 'pprof_http', config.exporter
       assert_equal 'http://127.0.0.1:9529/profiling/v1/input', config.endpoint
+    end
+  end
+
+  def test_otlp_is_not_an_alias_for_multipart_uploads
+    assert_raises(ArgumentError) do
+      Beacon::Profiling::Config.new(@env.merge('OTEL_PROFILING_EXPORTER' => 'otlp'))
     end
   end
 
