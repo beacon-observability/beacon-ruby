@@ -20,8 +20,8 @@ Enable profiling and upload to local DataKit:
 
 ```sh
 export OTEL_PROFILING_ENABLED=true
-export OTEL_PROFILING_EXPORTER=datakit
-export OTEL_PROFILING_PPROF_UPLOAD_URL=http://127.0.0.1:9529/profiling/v1/input
+export OTEL_PROFILING_EXPORTER=http
+export OTEL_PROFILING_ENDPOINT=http://127.0.0.1:9529/profiling/v1/input
 export OTEL_SERVICE_NAME=my-ruby-service
 export OTEL_RESOURCE_ATTRIBUTES=service.version=1.0,deployment.environment.name=local
 # Preload after Bundler has resolved the application Gemfile.
@@ -90,6 +90,11 @@ Credentials, response bodies and URLs are never logged.
 
 ## Export compatibility
 
+`http` selects the existing DataKit-compatible multipart/pprof uploader.
+The legacy `datakit` and `pprof_http` names remain accepted. `otlp` is reserved
+for a future OTLP Profiles implementation and is currently unsupported.
+The endpoint and other settings are unchanged.
+
 Uploads use a multipart `auto` attachment named `auto.pprof` plus an `event` part
 named `event.json`, with `language=ruby`, `family=ruby`, timestamps and resource
 tags. The legacy `profiler=ddtrace` value identifies the compatible DK multipart
@@ -137,7 +142,7 @@ native StackProf CPU/wall/allocation samples do not carry trace correlation.
 | `OTEL_PROFILING_MEMORY_IGNORE_PROFILER`      | `true`                                     | Excludes native samples whose stacks include profiler implementation frames.                                  |
 | `OTEL_PROFILING_MAX_FRAMES`                  | `64`                                       | Exported stack depth, 1–512. Native capture depth is unchanged.                                               |
 | `OTEL_PROFILING_INCLUDE_TRACE_CONTEXT`       | `true`                                     | Exception trace/span labels; `false` disables them.                                                           |
-| `OTEL_PROFILING_EXPORTER`                    | Automatic                                  | `pprof_http` / `datakit`, `pprof` / `file`, or `none`.                                                        |
+| `OTEL_PROFILING_EXPORTER`                    | Automatic                                  | `http` / `pprof_http` (legacy alias: `datakit`), `pprof` / `file`, or `none`.                                 |
 | `OTEL_PROFILING_PPROF_UPLOAD_URL`            | `http://127.0.0.1:9529/profiling/v1/input` | HTTP(S) destination.                                                                                          |
 | `OTEL_PROFILING_ENDPOINT`                    | Same local URL                             | Endpoint alias; explicit upload URL takes precedence.                                                         |
 | `OTEL_PROFILING_PPROF_HEADERS`               | Empty                                      | Comma-separated `name:value` headers; values may be percent encoded.                                          |

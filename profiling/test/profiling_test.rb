@@ -69,10 +69,10 @@ class ExportTest < Minitest::Test
       socket.write("HTTP/1.1 200 OK\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
       socket.close
     end
-    env = { 'OTEL_PROFILING_ENABLED' => 'true', 'OTEL_SERVICE_NAME' => 'profile-test',
+    env = { 'OTEL_PROFILING_ENABLED' => 'true', 'OTEL_PROFILING_EXPORTER' => 'http', 'OTEL_SERVICE_NAME' => 'profile-test',
             'OTEL_RESOURCE_ATTRIBUTES' => 'service.version=2,deployment.environment.name=local',
             'OTEL_PROFILING_PPROF_HEADERS' => 'X-Test:synthetic',
-            'OTEL_PROFILING_PPROF_UPLOAD_URL' => "http://127.0.0.1:#{server.addr[1]}/profiling/v1/input" }
+            'OTEL_PROFILING_ENDPOINT' => "http://127.0.0.1:#{server.addr[1]}/profiling/v1/input" }
     assert Beacon::Profiling.start(env: env)
     deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + 0.15
     Math.sqrt(123) while Process.clock_gettime(Process::CLOCK_MONOTONIC) < deadline
@@ -80,6 +80,9 @@ class ExportTest < Minitest::Test
     assert receiver.join(3)
     headers, body = received.pop
     assert_includes headers, 'POST /profiling/v1/input'
+    assert_includes headers, 'Content-Type: multipart/form-data; boundary='
+    assert_includes body, 'name="auto"; filename="auto.pprof"'
+    assert_includes body, 'name="event"; filename="event.json"'
     assert_includes body, 'service:profile-test'
     assert_includes body, 'version:2'
     assert_includes body, 'env:local'
@@ -87,6 +90,10 @@ class ExportTest < Minitest::Test
     assert_includes headers, 'X-Test: synthetic'
     profile = body.split("Content-Type: application/octet-stream\r\n\r\n", 2).last.split("\r\n--", 2).first
     assert_includes Zlib::GzipReader.new(StringIO.new(profile)).read, 'nanoseconds'
+    event = JSON.parse(body.split("Content-Type: application/json\r\n\r\n", 2).last.split("\r\n--", 2).first)
+    assert_equal ['auto.pprof'], event['attachments']
+    assert_equal 'ruby', event['language']
+    assert_equal 'pprof', event['format']
   ensure
     server&.close
     receiver&.kill

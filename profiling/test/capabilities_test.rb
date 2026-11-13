@@ -28,7 +28,12 @@ class CapabilitiesTest < Minitest::Test
   end
 
   def allocate_objects
-    10_000.times { Object.new }
+    # A short burst can finish between CPU samples on faster runtimes.
+    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + 0.02
+    loop do
+      10_000.times { Object.new }
+      break if Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
+    end
   end
 
   def test_rotating_wall_cpu_and_allocation_profiles_have_distinct_units
@@ -99,6 +104,21 @@ class CapabilitiesTest < Minitest::Test
     end
     assert_raises(ArgumentError) do
       Beacon::Profiling::Config.new(@env.merge('OTEL_PROFILING_EXPORTER' => 'datakit', 'OTEL_PROFILING_PPROF_HEADERS' => 'Content-Length:2'))
+    end
+  end
+
+  def test_http_name_selects_the_existing_datakit_exporter
+    %w[http datakit pprof_http].each do |name|
+      config = Beacon::Profiling::Config.new(@env.merge('OTEL_PROFILING_EXPORTER' => name,
+                                                        'OTEL_PROFILING_ENDPOINT' => 'http://127.0.0.1:9529/profiling/v1/input'))
+      assert_equal 'pprof_http', config.exporter
+      assert_equal 'http://127.0.0.1:9529/profiling/v1/input', config.endpoint
+    end
+  end
+
+  def test_otlp_is_not_an_alias_for_multipart_uploads
+    assert_raises(ArgumentError) do
+      Beacon::Profiling::Config.new(@env.merge('OTEL_PROFILING_EXPORTER' => 'otlp'))
     end
   end
 
