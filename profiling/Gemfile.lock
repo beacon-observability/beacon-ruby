@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    beacon-profiling (0.1.0)
+    beacon-profiling (0.1.1)
       stackprof (~> 0.2.27)
 
 GEM
