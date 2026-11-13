@@ -23,8 +23,9 @@ read it before contributing.
 - **Never post AI-generated comments on issues or PRs.** Discussions on
   OpenTelemetry repositories are for humans only. You cannot comment on issue or
   PR threads on a user's behalf.
-- For this Beacon repository, agents may draft and update English pull request
-  descriptions when the user requests a PR. Follow the
+- For this Beacon repository, agents must draft and update English pull request
+  descriptions as part of a user's PR request. Writing the description is part
+  of the authorized task and does not require a separate confirmation. Follow the
   [pull request template](.github/pull_request_template.md), describe the actual
   changes and verification, and disclose significant AI assistance. Do not ask
   the user to write each section or claim AI-generated text was written by a

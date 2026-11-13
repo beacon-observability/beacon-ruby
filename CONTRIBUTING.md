@@ -231,9 +231,10 @@ Therefore, please scope each pull request to include a single change.
 
 ### AI-assisted contributions
 
-In this Beacon repository, AI agents may draft and update English pull request
-descriptions using the [pull request template](.github/pull_request_template.md)
-when the user requests a PR. Descriptions must accurately summarize the changes,
+In this Beacon repository, AI agents draft and update English pull request
+descriptions by default when the user requests a PR, using the
+[pull request template](.github/pull_request_template.md). Preparing the description
+is part of that request and does not require a separate confirmation. Descriptions must accurately summarize the changes,
 verification results, and significant AI assistance. The user does not need to
 write each section, and AI-generated descriptions must not claim human authorship.
 
