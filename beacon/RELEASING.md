@@ -37,7 +37,7 @@ The v1.2.1 target updates the profiling gem to `0.1.1` while Security remains
 Run from the repository root, using a new output directory outside the source tree:
 
 ```sh
-beacon_release_version=1.2.1
+beacon_release_version=1.3.0
 beacon_release_commit=$(git rev-parse HEAD)
 beacon_release_dir=../beacon-ruby-release-${beacon_release_version}
 mkdir "$beacon_release_dir"
@@ -92,3 +92,13 @@ Publication of a Beacon gem on RubyGems requires a separate package identity, co
 RubyGems ownership and publication permission, clean artifact installation,
 versioned application configuration, and validation of its declared runtime and
 instrumentation support. A source release does not imply that this work is complete.
+
+## v1.3.0 Security migration
+
+The source snapshot distributes Security 0.2.0 (SIEM v1 output) and unchanged
+profiling 0.1.1. Reuse the immutable published profiling 0.1.1 gem only after
+verifying its packaged files against this source. Build Security from the committed
+archive; record schema v2, fingerprint v1, SIEM v1, and the immutable spec revision
+in `SOURCE.txt`. Validate both the extracted source and separately installed gem
+through the Collector before publication. The product snapshot and component gem
+versions remain independent; this process still does not publish to RubyGems.

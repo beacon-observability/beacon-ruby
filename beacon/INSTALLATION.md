@@ -1,8 +1,8 @@
-# Beacon Ruby v1.2.1 Source Installation
+# Beacon Ruby v1.3.0 Source Installation
 
-Status: release preparation. Versioned downloads become available after publication.
+This guide targets v1.3.0. Verify its GitHub Release and checksums before installing.
 
-`v1.2.1` distributes the complete Beacon Ruby source snapshot through GitHub
+`v1.3.0` distributes the complete Beacon Ruby source snapshot through GitHub
 Releases. It preserves official OpenTelemetry Ruby Contrib gem identities and
 versions, with Core API, SDK, and exporter gems used as dependencies. It includes opt-in Security and experimental profiling gems as GitHub Release assets. This release
 does not publish a `beacon-ruby` gem, an executable agent, or a zero-code preload.
@@ -15,18 +15,18 @@ have not been qualified.
 ## Download and Verify
 
 Download the five assets from the
-[v1.2.1 GitHub Release](https://github.com/beacon-observability/beacon-ruby/releases/tag/v1.2.1)
+[v1.3.0 GitHub Release](https://github.com/beacon-observability/beacon-ruby/releases/tag/v1.3.0)
 into a new directory:
 
 ```sh
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/beacon-ruby-1.2.1-source.tar.gz
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/beacon-security-0.1.0.gem
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/beacon-profiling-0.1.1.gem
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/SOURCE.txt
-curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.2.1/SHA256SUMS
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.3.0/beacon-ruby-1.3.0-source.tar.gz
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.3.0/beacon-security-0.2.0.gem
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.3.0/beacon-profiling-0.1.1.gem
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.3.0/SOURCE.txt
+curl -fLO https://github.com/beacon-observability/beacon-ruby/releases/download/v1.3.0/SHA256SUMS
 sha256sum -c SHA256SUMS
-tar -xzf beacon-ruby-1.2.1-source.tar.gz
-cd beacon-ruby-1.2.1
+tar -xzf beacon-ruby-1.3.0-source.tar.gz
+cd beacon-ruby-1.3.0
 ```
 
 `SOURCE.txt` records the exact Beacon source commit and official upstream baseline.
@@ -35,8 +35,8 @@ downloaded dependencies. The Security gem is a separate checksum-verified asset.
 in the source repository. As an alternative to the archive, clone the fixed tag:
 
 ```sh
-git clone --branch v1.2.1 --single-branch https://github.com/beacon-observability/beacon-ruby.git beacon-ruby-1.2.1
-cd beacon-ruby-1.2.1
+git clone --branch v1.3.0 --single-branch https://github.com/beacon-observability/beacon-ruby.git beacon-ruby-1.3.0
+cd beacon-ruby-1.3.0
 ```
 
 ## Verify the Selected Instrumentation Path
@@ -64,7 +64,7 @@ the selected Net::HTTP path. Refer to the component documentation before adaptin
 it; the imported Rails and other framework integrations are not qualified by this
 release. Complete test results and limitations are in the
 [source import acceptance record](validation/README.md) and
-[v1.2.1 release notes](releases/1.2.1.md).
+[v1.3.0 release notes](releases/1.3.0.md).
 
 ## Enable Security
 
@@ -73,12 +73,12 @@ exporter configuration. The gem is distributed on GitHub, not RubyGems. From the
 directory containing the downloaded assets:
 
 ```sh
-gem install ./beacon-security-0.1.0.gem --no-document
+gem install ./beacon-security-0.2.0.gem --no-document
 ```
 
 The runtime dependencies come from RubyGems. Add the installed exact version to
 an application's Gemfile, or use the extracted source with
-`gem 'beacon-security', path: '/absolute/path/to/beacon-ruby-1.2.1/security'`.
+`gem 'beacon-security', path: '/absolute/path/to/beacon-ruby-1.3.0/security'`.
 Require the application's clients before `Beacon::Security.start`, and add
 `Beacon::Security::Middleware` inside its OTel Rack server-span middleware.
 Set `BEACON_SECURITY_ENABLED=true`; local diagnostic files remain disabled.
@@ -138,6 +138,22 @@ For Puma or Unicorn, follow the explicit worker lifecycle hooks in the
 [profiling guide](../profiling/README.md). Do not run competing native profilers.
 See [profiling acceptance](../profiling/ACCEPTANCE.md) for validation and limits.
 Disable with `OTEL_PROFILING_ENABLED=false` and restart the application.
+
+## Security output migration
+
+Security 0.2.0 emits only SIEM v1 envelopes. Parse `message` for the complete
+serialized schema v2 finding or dependency inventory. `span_id` identifies the
+span active at detection, including server spans; old span aliases are absent.
+The fifteen base fields retain required process identity and available trace
+context. `no_evidence` findings are filtered by default; set
+`BEACON_SECURITY_EXPORT_NO_EVIDENCE_ENABLED=true` to include them. Unknown and
+suspected findings remain eligible. Fingerprint v1 is unchanged.
+
+Configured Resource `tenant.id` supplies tenant, otherwise `default`; verified
+actor/client-IP enrichment is unavailable and remains empty. Outcome stays unknown
+and severity informational. Budgets include final escaped envelope bytes. Update
+consumers before upgrading; no legacy-output switch exists. Rollback restores the
+v1.2.1 source, Security 0.1.0 and its historical v2-body consumer together.
 
 ## Upgrade and Rollback
 

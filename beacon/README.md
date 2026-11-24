@@ -5,8 +5,8 @@ Beacon Ruby starts from the complete official
 source and Git history. This is an independent downstream repository, not a GitHub
 fork. The source repository is
 [beacon-observability/beacon-ruby](https://github.com/beacon-observability/beacon-ruby).
-This source tree prepares `v1.2.1` (profiling gem `0.1.1`). See the [source installation guide](INSTALLATION.md)
-and [release notes](releases/1.2.1.md) for the fixed release scope and limitations.
+This source tree targets `v1.3.0` (Security gem `0.2.0`, profiling gem `0.1.1`). See the [source installation guide](INSTALLATION.md)
+and [release notes](releases/1.3.0.md) for the fixed release scope and limitations.
 
 The selected maintenance model preserves instrumentation sources so that future
 Beacon changes can be made and reviewed in their native modules without losing
