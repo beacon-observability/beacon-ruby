@@ -3,7 +3,7 @@
 module Beacon
   module Security
     VERSION = '0.1.0'
-    SPEC_COMMIT = 'af1b834501210bfd197bf606163680129cc5d09b'
+    SPEC_COMMIT = '4a30f30e1027568cfbcf8661079a072fc89bd825'
     SCHEMA_VERSION = 2
     FINGERPRINT_VERSION = 1
   end

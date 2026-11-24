@@ -22,6 +22,6 @@ class MemoryLogger
   end
 
   def events
-    @records.map { |record| JSON.parse(record[:body]) }
+    @records.map { |record| JSON.parse(JSON.parse(record[:body]).fetch('message')) }
   end
 end

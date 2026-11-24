@@ -1,3 +1,8 @@
 **/README.md
 **/sql_obfuscation.json
 .github/pull_request_template.md
+
+# Immutable normative fixtures retain the exact pinned specification bytes.
+security/test/fixtures/beacon-security-event-v2.schema.json
+security/test/fixtures/beacon-security-siem-v1.schema.json
+security/test/fixtures/spec/

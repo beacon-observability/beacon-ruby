@@ -23,6 +23,7 @@ module Beacon
                      else
                        {}
                      end
+        @resource = resource.dup
         @application_id = Fingerprint.application_id(resource)
         @mutex = Mutex.new
         @inventory_mutex = Mutex.new
@@ -95,6 +96,7 @@ module Beacon
       # Nonblocking bounded handoff; full queues drop new records without replay.
       def emit(event)
         return unless enabled?
+        return if event['event_name'] == 'beacon.security.finding' && event.dig('attack_evidence', 'status') == 'no_evidence' && !@configuration.export_no_evidence
 
         @queue.push(event, true)
       rescue ThreadError, ClosedQueueError
@@ -113,17 +115,19 @@ module Beacon
       # Serialize only on the worker and isolate host logger/filesystem failures.
       def deliver(event)
         json = JSON.generate(event)
-        if json.bytesize > MAX_EVENT_BYTES && event['event_name'] == 'beacon.security.finding'
+        if wire_bytes(event) > MAX_EVENT_BYTES && event['event_name'] == 'beacon.security.finding'
           event = event.except('sources', 'propagation', 'ranges', 'stack')
           event.merge!('evidence_sampled' => false, 'evidence_sample_reason' => 'record_byte_limit', 'truncated' => true, 'truncation_reason' => 'record_byte_limit')
           json = JSON.generate(event)
         end
+        json = JSON.generate(Siem.normalize(json, @resource))
         return if json.bytesize > MAX_EVENT_BYTES
 
         @logger.on_emit(severity_number: 9, severity_text: 'INFO', body: json, event_name: event['event_name'],
                         attributes: { 'event.name' => event['event_name'], 'source' => event['source'] },
                         trace_id: event['trace_id'] && [event['trace_id']].pack('H*'),
-                        span_id: (event['current_span_id'] || event['server_span_id'])&.then { |id| [id].pack('H*') },
+                        span_id: event['span_id']&.then { |id| [id].pack('H*') },
+                        trace_flags: event['trace_flags'],
                         timestamp: Time.iso8601(event.fetch('observed_at')))
         write_diagnostics(json, event) if @configuration.local_output
       rescue StandardError
@@ -165,19 +169,26 @@ module Beacon
 
       def inventory_parts(base, dependencies)
         whole = base.merge('dependencies' => dependencies)
-        return [whole] if JSON.generate(whole).bytesize <= MAX_EVENT_BYTES
+        return [whole] if wire_bytes(whole) <= MAX_EVENT_BYTES
 
         groups = [[]]
         dependencies.each do |dependency|
           trial = base.merge('dependencies' => groups.last + [dependency], 'part_index' => MAX_DEPENDENCIES, 'part_count' => MAX_DEPENDENCIES)
-          if JSON.generate(trial).bytesize > MAX_EVENT_BYTES
+          if wire_bytes(trial) > MAX_EVENT_BYTES
             raise RangeError, 'dependency exceeds record budget' if groups.last.empty?
 
             groups << []
           end
           groups.last << dependency
         end
-        groups.each_with_index.map { |group, index| base.merge('dependencies' => group, 'part_index' => index, 'part_count' => groups.size) }
+        parts = groups.each_with_index.map { |group, index| base.merge('dependencies' => group, 'part_index' => index, 'part_count' => groups.size) }
+        raise RangeError, 'dependency exceeds record budget' if parts.any? { |part| wire_bytes(part) > MAX_EVENT_BYTES }
+
+        parts
+      end
+
+      def wire_bytes(event)
+        JSON.generate(Siem.normalize(JSON.generate(event), @resource)).bytesize
       end
 
       def write_diagnostics(json, event)

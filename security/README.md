@@ -5,7 +5,7 @@ upstream OpenTelemetry instrumentation. Released in Beacon Ruby v1.1.0 as the se
 GitHub asset; it is not published on RubyGems. Beacon Ruby v1.0.0 does not include it.
 
 The implementation pins [Beacon Security specification](https://github.com/beacon-observability/beacon-security-spec)
-commit `af1b834501210bfd197bf606163680129cc5d09b`, emits **schema v2**, and implements
+commit `4a30f30e1027568cfbcf8661079a072fc89bd825`, emits **schema v2**, and implements
 **fingerprint v1**. The same versions are recorded in the packaged
 [contract.json](contract.json) and Ruby constants. All four pinned fingerprint
 vectors are checked by the tests. V1 events and legacy `SECURITY_*` settings are
@@ -70,6 +70,7 @@ request their observation calls have no effect.
 | Environment variable | Default | Meaning |
 | --- | --- | --- |
 | `BEACON_SECURITY_ENABLED` | `false` | Enable runtime and middleware collection. |
+| `BEACON_SECURITY_EXPORT_NO_EVIDENCE_ENABLED` | `false` | Include findings classified as `no_evidence`; other statuses stay eligible. |
 | `BEACON_SECURITY_SBOM_ENABLED` | `true` | Collect dependencies while Security is enabled. |
 | `BEACON_SECURITY_SBOM_REFRESH_SECONDS` | `300` | Delay after each collection finishes; positive integer. Invalid/zero values use 300. |
 | `BEACON_SECURITY_LOCAL_OUTPUT_ENABLED` | `false` | Opt in to diagnostic files. |
@@ -181,3 +182,28 @@ receipt, resource identity, scope, finding/SBOM events and trace correlation.
 See [acceptance](ACCEPTANCE.md) for measured evidence and limitations. No backend
 vulnerability confirmation, DataKit acceptance or production support matrix is
 established by these tests.
+
+## SIEM output migration
+
+Current OTel Logs and diagnostic JSONL use only `beacon-security-siem-v1` envelopes.
+The fifteen base fields are accompanied by required `instance_id` and available
+`trace_id`, `span_id`, and numeric `trace_flags`. Parse `message` to obtain the
+complete serialized schema v2 evidence and inventory metadata. The exact original
+string is retained; there is no legacy-format switch. Existing stored events are
+unchanged. Fingerprint v1 is unchanged. `span_id` is the span active at detection,
+including server spans; no request-entry fallback or old span aliases are emitted.
+
+Resource `service.name` supplies service; configured `tenant.id` supplies tenant,
+otherwise `default`. Authenticated actor and trusted client IP enrichment are not
+implemented and remain empty. Finding outcome is `unknown`; severity is
+`informational` and reflects INFO logs, not assessed risk. Inventory success means
+successful local collection only. Final escaped envelope bytes govern the 65536-byte
+record limit and multipart packing. Optional finding evidence may be removed before
+serialization with explicit truncation markers; a record that still exceeds the
+limit is dropped without an alternative event or silent shortening of `message`.
+
+Filtering occurs before queue admission and applies to OTel and diagnostic JSONL.
+The current approximate classifier produces `unknown`; adding the filter does not
+claim sanitizer or attack-analysis coverage. Inventory is unaffected. Upgrade
+consumers before upgrading the gem; rollback requires the previous gem and its
+historical v2-body consumer together.

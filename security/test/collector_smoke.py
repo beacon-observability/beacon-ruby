@@ -52,7 +52,10 @@ def main():
                     for scope in resource.get("scopeLogs", []):
                         assert scope["scope"]["name"] == "io.beacon.security"
                         for record in scope["logRecords"]:
-                            body = json.loads(record["body"]["stringValue"])
+                            envelope = json.loads(record["body"]["stringValue"])
+                            body = json.loads(envelope["message"])
+                            assert envelope["instance_id"] == body["instance_id"]
+                            assert envelope["source"] == body["source"]
                             assert record["severityNumber"] == 9
                             assert record["eventName"] == body["event_name"]
                             assert body["schema_version"] == 2
@@ -62,7 +65,7 @@ def main():
                             if body["event_name"] == "beacon.security.finding":
                                 assert body["rule"] == "path_traversal"
                                 assert body["trace_id"] == record["traceId"]
-                                assert body["server_span_id"] == record["spanId"]
+                                assert body["span_id"] == record["spanId"]
                                 assert "/dev/null" not in json.dumps(body)
                             bodies.append(body)
             assert any(b["event_name"] == "beacon.security.finding" for b in bodies)
