@@ -22,7 +22,6 @@ module Beacon
         @limited = false
         @source_bytes = 0
         @observations = 0
-        @server_context = OpenTelemetry::Trace.current_span.context
         collect_sources
       end
 
@@ -55,11 +54,11 @@ module Beacon
           'evidence_sampled' => true, 'collection_complete' => false, 'precision' => 'approximate',
           'coverage_gaps' => GAPS.dup, 'sources' => matches.map { |s| s[:metadata] }
         )
-        if @server_context.valid?
-          event['trace_id'] = @server_context.hex_trace_id
-          event['server_span_id'] = @server_context.hex_span_id
-          current = OpenTelemetry::Trace.current_span.context
-          event['current_span_id'] = current.hex_span_id if current.valid? && current.span_id != @server_context.span_id
+        current = OpenTelemetry::Trace.current_span.context
+        if current.valid?
+          event['trace_id'] = current.hex_trace_id
+          event['span_id'] = current.hex_span_id
+          event['trace_flags'] = current.trace_flags.sampled? ? 1 : 0
         end
         @findings[id] = event
       end

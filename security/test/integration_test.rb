@@ -114,19 +114,32 @@ class IntegrationTest < Minitest::Test
         tracer.in_span('child') do
           @runtime.observe('sql_injection', 'select private-otel-value', function: 'DB.query', role: 'sql_template')
         end
+        @runtime.observe('sql_injection', 'select private-otel-value', function: 'Server.query', role: 'sql_template')
+        OpenTelemetry::Trace.with_span(OpenTelemetry::Trace::Span::INVALID) do
+          @runtime.observe('sql_injection', 'select private-otel-value', function: 'Detached.query', role: 'sql_template')
+        end
         [200, {}, []]
       end
       record = exporter.emitted_log_records.first
-      event = JSON.parse(record.body)
+      envelope = JSON.parse(record.body)
+      event = JSON.parse(envelope.fetch('message'))
+      assert_equal event['instance_id'], envelope['instance_id']
+      assert_equal event['span_id'], record.span_id.unpack1('H*')
       assert_equal server.context.hex_trace_id, event['trace_id']
-      assert_equal server.context.hex_span_id, event['server_span_id']
-      refute_equal event['server_span_id'], event['current_span_id']
+      refute_equal server.context.hex_span_id, event['span_id']
+      refute event.key?('server_span_id')
+      refute event.key?('current_span_id')
       assert_equal 9, record.severity_number
       assert_equal 'INFO', record.severity_text
       assert_equal event['event_name'], record.event_name
       assert_equal event['source'], record.attributes['source']
       assert_equal 'io.beacon.security', record.instrumentation_scope.name
       assert_equal 'security-test', record.resource.attribute_enumerator.to_h['service.name']
+      evidence = exporter.emitted_log_records.map { |entry| JSON.parse(JSON.parse(entry.body)['message']) }
+      assert_equal 3, evidence.size
+      assert_equal server.context.hex_span_id, evidence[1]['span_id']
+      refute evidence[2].key?('span_id')
+      refute evidence[2].key?('trace_id')
     end
   ensure
     provider&.shutdown

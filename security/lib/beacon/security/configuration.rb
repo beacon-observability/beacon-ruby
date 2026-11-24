@@ -7,9 +7,10 @@ module Beacon
     # Only case-insensitive true enables a boolean. Invalid refresh values use 300.
     # @see https://github.com/beacon-observability/beacon-security-spec
     class Configuration
-      attr_reader :enabled, :sbom_enabled, :local_output, :output, :evidence_file, :refresh_seconds
+      attr_reader :export_no_evidence, :enabled, :sbom_enabled, :local_output, :output, :evidence_file, :refresh_seconds
 
       def initialize(env = ENV)
+        @export_no_evidence = boolean(env, 'BEACON_SECURITY_EXPORT_NO_EVIDENCE_ENABLED', false)
         @enabled = boolean(env, 'BEACON_SECURITY_ENABLED', false)
         @sbom_enabled = boolean(env, 'BEACON_SECURITY_SBOM_ENABLED', true)
         @local_output = boolean(env, 'BEACON_SECURITY_LOCAL_OUTPUT_ENABLED', false)

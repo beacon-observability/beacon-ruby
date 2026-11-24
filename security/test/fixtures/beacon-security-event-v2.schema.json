@@ -4,7 +4,10 @@
   "$defs": {
     "dependency": {
       "type": "object",
-      "required": ["name", "version"],
+      "required": [
+        "name",
+        "version"
+      ],
       "properties": {
         "name": {
           "type": "string"
@@ -73,8 +76,12 @@
       },
       "additionalProperties": false,
       "dependentRequired": {
-        "part_index": ["part_count"],
-        "part_count": ["part_index"]
+        "part_index": [
+          "part_count"
+        ],
+        "part_count": [
+          "part_index"
+        ]
       }
     },
     "finding": {
@@ -187,10 +194,17 @@
         },
         "attack_evidence": {
           "type": "object",
-          "required": ["status", "reason"],
+          "required": [
+            "status",
+            "reason"
+          ],
           "properties": {
             "status": {
-              "enum": ["unknown", "no_evidence", "suspected"]
+              "enum": [
+                "unknown",
+                "no_evidence",
+                "suspected"
+              ]
             },
             "reason": {
               "type": "string"
@@ -199,12 +213,6 @@
           "additionalProperties": false
         },
         "trace_id": {
-          "type": "string"
-        },
-        "server_span_id": {
-          "type": "string"
-        },
-        "current_span_id": {
           "type": "string"
         },
         "precision": {
@@ -246,27 +254,49 @@
         "triage": {
           "type": "object",
           "minProperties": 1
+        },
+        "span_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$",
+          "description": "Current invocation span ID. Retained even when it is the HTTP server span."
+        },
+        "trace_flags": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
         }
       },
       "not": {
         "anyOf": [
           {
-            "required": ["application_id"]
+            "required": [
+              "application_id"
+            ]
           },
           {
-            "required": ["evidence_id"]
+            "required": [
+              "evidence_id"
+            ]
           },
           {
-            "required": ["occurrences_total"]
+            "required": [
+              "occurrences_total"
+            ]
           },
           {
-            "required": ["sbom_id"]
+            "required": [
+              "sbom_id"
+            ]
           },
           {
-            "required": ["revision"]
+            "required": [
+              "revision"
+            ]
           },
           {
-            "required": ["release_id"]
+            "required": [
+              "release_id"
+            ]
           }
         ]
       },
