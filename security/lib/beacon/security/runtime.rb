@@ -120,11 +120,12 @@ module Beacon
           event.merge!('evidence_sampled' => false, 'evidence_sample_reason' => 'record_byte_limit', 'truncated' => true, 'truncation_reason' => 'record_byte_limit')
           json = JSON.generate(event)
         end
-        json = JSON.generate(Siem.normalize(json, @resource))
+        bound = LogRecord.bind(event)
+        json = bound['body']
         return if json.bytesize > MAX_EVENT_BYTES
 
         @logger.on_emit(severity_number: 9, severity_text: 'INFO', body: json, event_name: event['event_name'],
-                        attributes: { 'event.name' => event['event_name'], 'source' => event['source'] },
+                        attributes: { 'event.name' => event['event_name'] }.merge(bound['attributes']),
                         trace_id: event['trace_id'] && [event['trace_id']].pack('H*'),
                         span_id: event['span_id']&.then { |id| [id].pack('H*') },
                         trace_flags: event['trace_flags'],
@@ -188,7 +189,7 @@ module Beacon
       end
 
       def wire_bytes(event)
-        JSON.generate(Siem.normalize(JSON.generate(event), @resource)).bytesize
+        LogRecord.bind(event)['body'].bytesize
       end
 
       def write_diagnostics(json, event)

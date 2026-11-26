@@ -5,7 +5,7 @@ require 'ipaddr'
 
 module Beacon
   module Security
-    # The current wire profile preserves the original serialized evidence in message.
+    # Historical SIEM reference only; producers use LogRecord.
     module Siem
       module_function
 

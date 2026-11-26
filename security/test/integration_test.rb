@@ -122,7 +122,7 @@ class IntegrationTest < Minitest::Test
       end
       record = exporter.emitted_log_records.first
       envelope = JSON.parse(record.body)
-      event = JSON.parse(envelope.fetch('message'))
+      event = envelope
       assert_equal event['instance_id'], envelope['instance_id']
       assert_equal event['span_id'], record.span_id.unpack1('H*')
       assert_equal server.context.hex_trace_id, event['trace_id']
@@ -135,7 +135,7 @@ class IntegrationTest < Minitest::Test
       assert_equal event['source'], record.attributes['source']
       assert_equal 'io.beacon.security', record.instrumentation_scope.name
       assert_equal 'security-test', record.resource.attribute_enumerator.to_h['service.name']
-      evidence = exporter.emitted_log_records.map { |entry| JSON.parse(JSON.parse(entry.body)['message']) }
+      evidence = exporter.emitted_log_records.map { |entry| JSON.parse(entry.body) }
       assert_equal 3, evidence.size
       assert_equal server.context.hex_span_id, evidence[1]['span_id']
       refute evidence[2].key?('span_id')

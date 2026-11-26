@@ -1,9 +1,10 @@
 {
   "repository": "https://github.com/beacon-observability/beacon-security-spec",
-  "commit": "4a30f30e1027568cfbcf8661079a072fc89bd825",
+  "commit": "d9d76e5a41d974d294bb596e06918bb954319bf6",
   "schema_version": 2,
   "fingerprint_version": 1,
-  "output_profile": "beacon-security-siem-v1",
+  "output_profile": "beacon-security-log-body-v1",
   "schema_sha256": "e8051b48413c3a430dc2f0ea8cd4e24414bb58a6b082b2786602d98a82ab02e7",
-  "siem_schema_sha256": "6015b0d4a0ac13a42bd4655a17d248bec70e39c80b1e8ae5db44e5fb6de53e8f"
+  "siem_schema_sha256": "d7a27e59bd740cb4671ec4f24d3c5c3d2277020dec6a66bff42e58115bf9d34f",
+  "log_body_schema_sha256": "5a46ed5600234f54a81d682b1a413ffacbcc0b1b4580f70a76d608f080b187ec"
 }

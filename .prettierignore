@@ -6,3 +6,5 @@
 security/test/fixtures/beacon-security-event-v2.schema.json
 security/test/fixtures/beacon-security-siem-v1.schema.json
 security/test/fixtures/spec/
+security/test/fixtures/beacon-security-log-body-v1.schema.json
+security/test/fixtures/beacon-security-log-record-v1.schema.json

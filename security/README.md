@@ -5,7 +5,7 @@ upstream OpenTelemetry instrumentation. Beacon Ruby v1.3.0 distributes the separ
 GitHub asset; it is not published on RubyGems. Beacon Ruby v1.0.0 does not include it.
 
 The implementation pins [Beacon Security specification](https://github.com/beacon-observability/beacon-security-spec)
-commit `4a30f30e1027568cfbcf8661079a072fc89bd825`, emits **schema v2**, and implements
+commit `d9d76e5a41d974d294bb596e06918bb954319bf6`, emits **schema v2**, and implements
 **fingerprint v1**. The same versions are recorded in the packaged
 [contract.json](contract.json) and Ruby constants. All four pinned fingerprint
 vectors are checked by the tests. V1 events and legacy `SECURITY_*` settings are
@@ -183,27 +183,17 @@ See [acceptance](ACCEPTANCE.md) for measured evidence and limitations. No backen
 vulnerability confirmation, DataKit acceptance or production support matrix is
 established by these tests.
 
-## SIEM output migration
+## Security log binding migration
 
-Current OTel Logs and diagnostic JSONL use only `beacon-security-siem-v1` envelopes.
-The fifteen base fields are accompanied by required `instance_id` and available
-`trace_id`, `span_id`, and numeric `trace_flags`. Parse `message` to obtain the
-complete serialized schema v2 evidence and inventory metadata. The exact original
-string is retained; there is no legacy-format switch. Existing stored events are
-unchanged. Fingerprint v1 is unchanged. `span_id` is the span active at detection,
-including server spans; no request-entry fallback or old span aliases are emitted.
+Current source exports compact single-line v2 JSON directly in the OTel LogRecord
+Body. It moves `observed_at` to the native timestamp and `occurrence_id` to the
+`event_id` log attribute. All other fields keep their original paths and values;
+there is no `message` wrapper. `source` remains in both Body and log attributes.
+The pinned output profile is `beacon-security-log-body-v1`; schema v2 and
+fingerprint v1 are unchanged. Inventory IDs retain the SHA-256 algorithm over the
+original timestamp and part index. Queueing does not change event time or IDs.
 
-Resource `service.name` supplies service; configured `tenant.id` supplies tenant,
-otherwise `default`. Authenticated actor and trusted client IP enrichment are not
-implemented and remain empty. Finding outcome is `unknown`; severity is
-`informational` and reflects INFO logs, not assessed risk. Inventory success means
-successful local collection only. Final escaped envelope bytes govern the 65536-byte
-record limit and multipart packing. Optional finding evidence may be removed before
-serialization with explicit truncation markers; a record that still exceeds the
-limit is dropped without an alternative event or silent shortening of `message`.
-
-Filtering occurs before queue admission and applies to OTel and diagnostic JSONL.
-The current approximate classifier produces `unknown`; adding the filter does not
-claim sanitizer or attack-analysis coverage. Inventory is unaffected. Upgrade
-consumers before upgrading the gem; rollback requires the previous gem and its
-historical v2-body consumer together.
+Diagnostic files contain the same compact Body with an external LF delimiter for
+JSONL. Body-only archives omit event time and occurrence identity. Use native OTel
+metadata when those values are needed. Multipart planning and truncation account
+for final UTF-8 Body bytes. SIEM projections are downstream-only references.
