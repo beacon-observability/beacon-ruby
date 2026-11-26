@@ -7,8 +7,8 @@ class SiemTest < Minitest::Test
   def test_packaged_provenance_matches_normative_schema_bytes
     contract = JSON.parse(File.read(File.join(__dir__, '../contract.json')))
     assert_equal Beacon::Security::SPEC_COMMIT, contract['commit']
-    assert_equal 'beacon-security-siem-v1', contract['output_profile']
-    { 'schema_sha256' => 'beacon-security-event-v2.schema.json', 'siem_schema_sha256' => 'beacon-security-siem-v1.schema.json' }.each do |key, file|
+    assert_equal 'beacon-security-log-body-v1', contract['output_profile']
+    { 'schema_sha256' => 'beacon-security-event-v2.schema.json', 'siem_schema_sha256' => 'beacon-security-siem-v1.schema.json', 'log_body_schema_sha256' => 'beacon-security-log-body-v1.schema.json' }.each do |key, file|
       assert_equal contract[key], Digest::SHA256.file(File.join(__dir__, 'fixtures', file)).hexdigest
     end
   end
@@ -50,7 +50,7 @@ class SiemTest < Minitest::Test
     parts = runtime.send(:inventory_parts, base, dependencies)
     assert_equal(dependencies, parts.flat_map { |part| part['dependencies'] })
     parts.each do |part|
-      wire = JSON.generate(Beacon::Security::Siem.normalize(JSON.generate(part)))
+      wire = Beacon::Security::LogRecord.bind(part)['body']
       assert_operator wire.bytesize, :<=, Beacon::Security::Runtime::MAX_EVENT_BYTES
     end
     assert_raises(RangeError) { runtime.send(:inventory_parts, base, [{ 'name' => 'x' * 100_000, 'version' => '1' }]) }

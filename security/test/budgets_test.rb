@@ -52,7 +52,7 @@ class BudgetsTest < Minitest::Test
     assert_equal(dependencies, parts.flat_map { |part| part['dependencies'] })
     schema = JSONSchemer.schema(JSON.parse(File.read(File.join(__dir__, 'fixtures/beacon-security-event-v2.schema.json'))))
     parts.each_with_index do |part, index|
-      assert_operator JSON.generate(part).bytesize, :<=, 65_536
+      assert_operator Beacon::Security::LogRecord.bind(part)['body'].bytesize, :<=, 65_536
       assert_equal index, part['part_index']
       assert_equal parts.size, part['part_count']
       assert schema.valid?(part)

@@ -22,6 +22,6 @@ class MemoryLogger
   end
 
   def events
-    @records.map { |record| JSON.parse(JSON.parse(record[:body]).fetch('message')) }
+    @records.map { |record| JSON.parse(record[:body]).merge('observed_at' => record[:timestamp].utc.iso8601(9)).tap { |event| event['occurrence_id'] = record[:attributes]['event_id'] if event['event_name'] == 'beacon.security.finding' } }
   end
 end

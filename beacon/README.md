@@ -89,3 +89,16 @@ acceptance scope and does not establish a complete supported runtime matrix.
 The source tree now includes an experimental, opt-in [profiling gem](../profiling/README.md)
 with CPU, wall, allocation and exception sampling, pprof files, and HTTP multipart export. It is not part
 of the trace SDK or a general zero-code launcher.
+
+## Current Security log binding
+
+Current source pins Security specification
+`d9d76e5a41d974d294bb596e06918bb954319bf6` and output profile
+`beacon-security-log-body-v1`. Each OTel LogRecord Body is compact single-line v2
+JSON. Only `observed_at` and `occurrence_id` move out of Body: event time uses the
+native timestamp, and occurrence identity uses log attribute `event_id`.
+`source` stays in Body and attributes. All remaining fields retain their original
+paths; there is no SIEM envelope or `message` wrapper. Inventory IDs are computed
+from the original logical event before compaction. Retransmissions retain time
+and identity. Body byte budgets and multipart planning use the final UTF-8 JSON.
+This source change does not establish acceptance for previously published releases.
