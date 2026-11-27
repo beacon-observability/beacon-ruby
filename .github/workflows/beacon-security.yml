@@ -45,4 +45,4 @@ jobs:
           BEACON_TEST_PG_PORT: ${{ job.services.postgres.ports[5432] }}
           BEACON_TEST_MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
       - run: bundle exec rake yard
-      - run: mkdir -p pkg && gem build beacon-security.gemspec --output pkg/beacon-security-0.2.0.gem
+      - run: mkdir -p pkg && gem build beacon-security.gemspec --output pkg/beacon-security-0.3.0.gem

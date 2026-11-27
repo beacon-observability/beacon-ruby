@@ -1,7 +1,7 @@
 # Beacon Security for Ruby
 
 An opt-in runtime observation gem for Linux CRuby 3.3+, developed independently of
-upstream OpenTelemetry instrumentation. Beacon Ruby v1.3.0 distributes the separate `beacon-security-0.2.0.gem`
+upstream OpenTelemetry instrumentation. Beacon Ruby v2.0.0 distributes the separate `beacon-security-0.3.0.gem`
 GitHub asset; it is not published on RubyGems. Beacon Ruby v1.0.0 does not include it.
 
 The implementation pins [Beacon Security specification](https://github.com/beacon-observability/beacon-security-spec)
@@ -166,7 +166,7 @@ bundle exec rake test
 bundle exec appraisal install
 bundle exec appraisal rake test
 bundle exec rake yard
-gem build beacon-security.gemspec --output pkg/beacon-security-0.2.0.gem
+gem build beacon-security.gemspec --output pkg/beacon-security-0.3.0.gem
 BEACON_SECURITY_ENABLED=true bundle exec ruby examples/rack_observation.rb
 python3 test/collector_smoke.py
 ```
